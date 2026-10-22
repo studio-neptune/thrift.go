@@ -275,20 +275,20 @@ func ReadWriteByte(t testing.TB, p TProtocol, trans TTransport) {
 	for k, v := range BYTE_VALUES {
 		err = p.WriteByte(v)
 		if err != nil {
-			t.Errorf("%s: %T %T %q Error writing byte in list at index %d: %q", "ReadWriteByte", p, trans, err, k, v)
+			t.Errorf("%s: %T %T %q Error writing byte in list at index %d: %d", "ReadWriteByte", p, trans, err, k, v)
 		}
 	}
 	err = p.WriteListEnd()
 	if err != nil {
-		t.Errorf("%s: %T %T %q Error writing list end: %q", "ReadWriteByte", p, trans, err, BYTE_VALUES)
+		t.Errorf("%s: %T %T %q Error writing list end: %v", "ReadWriteByte", p, trans, err, BYTE_VALUES)
 	}
 	err = p.Flush(context.Background())
 	if err != nil {
-		t.Errorf("%s: %T %T %q Error flushing list of bytes: %q", "ReadWriteByte", p, trans, err, BYTE_VALUES)
+		t.Errorf("%s: %T %T %q Error flushing list of bytes: %v", "ReadWriteByte", p, trans, err, BYTE_VALUES)
 	}
 	thetype2, thelen2, err := p.ReadListBegin()
 	if err != nil {
-		t.Errorf("%s: %T %T %q Error reading list: %q", "ReadWriteByte", p, trans, err, BYTE_VALUES)
+		t.Errorf("%s: %T %T %q Error reading list: %v", "ReadWriteByte", p, trans, err, BYTE_VALUES)
 	}
 	_, ok := p.(*TSimpleJSONProtocol)
 	if !ok {
@@ -302,7 +302,7 @@ func ReadWriteByte(t testing.TB, p TProtocol, trans TTransport) {
 	for k, v := range BYTE_VALUES {
 		value, err := p.ReadByte()
 		if err != nil {
-			t.Errorf("%s: %T %T %q Error reading byte at index %d: %q", "ReadWriteByte", p, trans, err, k, v)
+			t.Errorf("%s: %T %T %q Error reading byte at index %d: %d", "ReadWriteByte", p, trans, err, k, v)
 		}
 		if v != value {
 			t.Errorf("%s: %T %T %d != %d", "ReadWriteByte", p, trans, v, value)
@@ -325,7 +325,7 @@ func ReadWriteI16(t testing.TB, p TProtocol, trans TTransport) {
 	p.Flush(context.Background())
 	thetype2, thelen2, err := p.ReadListBegin()
 	if err != nil {
-		t.Errorf("%s: %T %T %q Error reading list: %q", "ReadWriteI16", p, trans, err, INT16_VALUES)
+		t.Errorf("%s: %T %T %q Error reading list: %v", "ReadWriteI16", p, trans, err, INT16_VALUES)
 	}
 	_, ok := p.(*TSimpleJSONProtocol)
 	if !ok {
@@ -339,7 +339,7 @@ func ReadWriteI16(t testing.TB, p TProtocol, trans TTransport) {
 	for k, v := range INT16_VALUES {
 		value, err := p.ReadI16()
 		if err != nil {
-			t.Errorf("%s: %T %T %q Error reading int16 at index %d: %q", "ReadWriteI16", p, trans, err, k, v)
+			t.Errorf("%s: %T %T %q Error reading int16 at index %d: %d", "ReadWriteI16", p, trans, err, k, v)
 		}
 		if v != value {
 			t.Errorf("%s: %T %T %d != %d", "ReadWriteI16", p, trans, v, value)
@@ -362,7 +362,7 @@ func ReadWriteI32(t testing.TB, p TProtocol, trans TTransport) {
 	p.Flush(context.Background())
 	thetype2, thelen2, err := p.ReadListBegin()
 	if err != nil {
-		t.Errorf("%s: %T %T %q Error reading list: %q", "ReadWriteI32", p, trans, err, INT32_VALUES)
+		t.Errorf("%s: %T %T %q Error reading list: %v", "ReadWriteI32", p, trans, err, INT32_VALUES)
 	}
 	_, ok := p.(*TSimpleJSONProtocol)
 	if !ok {
@@ -376,7 +376,7 @@ func ReadWriteI32(t testing.TB, p TProtocol, trans TTransport) {
 	for k, v := range INT32_VALUES {
 		value, err := p.ReadI32()
 		if err != nil {
-			t.Errorf("%s: %T %T %q Error reading int32 at index %d: %q", "ReadWriteI32", p, trans, err, k, v)
+			t.Errorf("%s: %T %T %q Error reading int32 at index %d: %d", "ReadWriteI32", p, trans, err, k, v)
 		}
 		if v != value {
 			t.Errorf("%s: %T %T %d != %d", "ReadWriteI32", p, trans, v, value)
@@ -398,7 +398,7 @@ func ReadWriteI64(t testing.TB, p TProtocol, trans TTransport) {
 	p.Flush(context.Background())
 	thetype2, thelen2, err := p.ReadListBegin()
 	if err != nil {
-		t.Errorf("%s: %T %T %q Error reading list: %q", "ReadWriteI64", p, trans, err, INT64_VALUES)
+		t.Errorf("%s: %T %T %q Error reading list: %v", "ReadWriteI64", p, trans, err, INT64_VALUES)
 	}
 	_, ok := p.(*TSimpleJSONProtocol)
 	if !ok {
@@ -412,10 +412,10 @@ func ReadWriteI64(t testing.TB, p TProtocol, trans TTransport) {
 	for k, v := range INT64_VALUES {
 		value, err := p.ReadI64()
 		if err != nil {
-			t.Errorf("%s: %T %T %q Error reading int64 at index %d: %q", "ReadWriteI64", p, trans, err, k, v)
+			t.Errorf("%s: %T %T %q Error reading int64 at index %d: %d", "ReadWriteI64", p, trans, err, k, v)
 		}
 		if v != value {
-			t.Errorf("%s: %T %T %q != %q", "ReadWriteI64", p, trans, v, value)
+			t.Errorf("%s: %T %T %d != %d", "ReadWriteI64", p, trans, v, value)
 		}
 	}
 	if err != nil {
