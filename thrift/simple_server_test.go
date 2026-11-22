@@ -20,10 +20,16 @@
 package thrift
 
 import (
-	"testing"
+	"context"
 	"errors"
+	"net"
 	"runtime"
+	"sync"
+	"testing"
+	"time"
 )
+
+const networkWaitDuration = 10 * time.Millisecond
 
 type mockServerTransport struct {
 	ListenFunc    func() error
@@ -153,4 +159,162 @@ func TestNoHangDuringStopFromDanglingLockAcquireDuringAcceptLoop(t *testing.T) {
 	go serv.Serve()
 	runtime.Gosched()
 	serv.Stop()
+}
+
+func TestNoHangDuringStopFromClientNoDataSendDuringAcceptLoop(t *testing.T) {
+	ln, err := net.Listen("tcp", "localhost:0")
+
+	if err != nil {
+		t.Fatalf("Failed to listen: %v", err)
+	}
+
+	// Closed once the server is processing the connection, which is after
+	// TSimpleServer added it to the wait group Stop waits on. Sleeping
+	// instead makes the test fail whenever the accept and the goroutine
+	// start take longer than the nap.
+	processing := make(chan struct{})
+	markProcessing := sync.OnceFunc(func() {
+		close(processing)
+	})
+
+	proc := &mockProcessor{
+		ProcessFunc: func(in, out TProtocol) (bool, TException) {
+			markProcessing()
+			in.ReadMessageBegin(context.Background())
+			return false, nil
+		},
+	}
+
+	trans := &mockServerTransport{
+		ListenFunc: func() error {
+			return nil
+		},
+		AcceptFunc: func() (TTransport, error) {
+			conn, err := ln.Accept()
+			if err != nil {
+				return nil, err
+			}
+
+			return NewTSocketFromConnConf(conn, nil), nil
+		},
+		CloseFunc: func() error {
+			return nil
+		},
+		InterruptFunc: func() error {
+			return ln.Close()
+		},
+	}
+
+	serv := NewTSimpleServer2(proc, trans)
+	go serv.Serve()
+
+	netConn, err := net.Dial("tcp", ln.Addr().String())
+	if err != nil || netConn == nil {
+		t.Fatalf("error when dial server: %v", err)
+	}
+	// The connection must outlive Stop: it is what keeps the processor
+	// blocked in ReadMessageBegin.
+	t.Cleanup(func() {
+		netConn.Close()
+	})
+
+	select {
+	case <-processing:
+	case <-time.After(time.Minute):
+		t.Fatal("server did not start processing the connection")
+	}
+
+	const serverStopTimeout = 50 * time.Millisecond
+	backupServerStopTimeout := ServerStopTimeout
+	t.Cleanup(func() {
+		ServerStopTimeout = backupServerStopTimeout
+	})
+	ServerStopTimeout = serverStopTimeout
+
+	st := time.Now()
+	if err := serv.Stop(); err != nil {
+		t.Errorf("error when stop server:%v", err)
+	}
+
+	if elapsed := time.Since(st); elapsed < serverStopTimeout {
+		t.Errorf("stop cost less time than server stop timeout, server stop timeout:%v,cost time:%v", serverStopTimeout, elapsed)
+	}
+}
+
+func TestStopTimeoutWithSocketTimeout(t *testing.T) {
+	ln, err := net.Listen("tcp", "localhost:0")
+
+	if err != nil {
+		t.Fatalf("Failed to listen: %v", err)
+	}
+
+	proc := &mockProcessor{
+		ProcessFunc: func(in, out TProtocol) (bool, TException) {
+			in.ReadMessageBegin(context.Background())
+			return false, nil
+		},
+	}
+
+	conf := &TConfiguration{SocketTimeout: 5 * time.Millisecond}
+	wg := &sync.WaitGroup{}
+	trans := &mockServerTransport{
+		ListenFunc: func() error {
+			return nil
+		},
+		AcceptFunc: func() (TTransport, error) {
+			conn, err := ln.Accept()
+			if err != nil {
+				return nil, err
+			}
+			defer wg.Done()
+			return NewTSocketFromConnConf(conn, conf), nil
+		},
+		CloseFunc: func() error {
+			return nil
+		},
+		InterruptFunc: func() error {
+			return ln.Close()
+		},
+	}
+
+	serv := NewTSimpleServer2(proc, trans)
+	go serv.Serve()
+	time.Sleep(networkWaitDuration)
+
+	wg.Add(1)
+	netConn, err := net.Dial("tcp", ln.Addr().String())
+	if err != nil || netConn == nil {
+		t.Fatal("error when dial server")
+	}
+	wg.Wait()
+
+	expectedStopTimeout := time.Second
+	backupServerStopTimeout := ServerStopTimeout
+	t.Cleanup(func() {
+		ServerStopTimeout = backupServerStopTimeout
+	})
+	ServerStopTimeout = expectedStopTimeout
+
+	st := time.Now()
+	err = serv.Stop()
+	if elapsed := time.Since(st); elapsed > expectedStopTimeout/2 {
+		t.Errorf("stop cost more time than socket timeout, socket timeout:%v,server stop timeout:%v,cost time:%v", conf.SocketTimeout, ServerStopTimeout, elapsed)
+	}
+
+	if err != nil {
+		t.Fatalf("error when stop server:%v", err)
+	}
+}
+
+func TestErrAbandonRequest(t *testing.T) {
+	if !errors.Is(ErrAbandonRequest, ErrAbandonRequest) {
+		t.Error("errors.Is(ErrAbandonRequest, ErrAbandonRequest) returned false")
+	}
+	if !errors.Is(ErrAbandonRequest, context.Canceled) {
+		t.Error("errors.Is(ErrAbandonRequest, context.Canceled) returned false")
+	}
+	//lint:ignore SA1032 Intentional order for this test.
+	if errors.Is(context.Canceled, ErrAbandonRequest) {
+		t.Error("errors.Is(context.Canceled, ErrAbandonRequest) returned true")
+	}
 }

@@ -38,9 +38,8 @@ func NewTSSLServerSocket(listenAddr string, cfg *tls.Config) (*TSSLServerSocket,
 }
 
 func NewTSSLServerSocketTimeout(listenAddr string, cfg *tls.Config, clientTimeout time.Duration) (*TSSLServerSocket, error) {
-	if cfg.MinVersion == 0 {
-		cfg.MinVersion = tls.VersionTLS10
-	}
+	// Leave an unset MinVersion alone so crypto/tls applies its own default
+	// floor rather than pinning an older minimum here.
 	addr, err := net.ResolveTCPAddr("tcp", listenAddr)
 	if err != nil {
 		return nil, err
@@ -93,6 +92,9 @@ func (p *TSSLServerSocket) Open() error {
 }
 
 func (p *TSSLServerSocket) Addr() net.Addr {
+	if p.listener != nil {
+		return p.listener.Addr()
+	}
 	return p.addr
 }
 

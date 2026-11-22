@@ -35,7 +35,7 @@ func TestWriteSimpleJSONProtocolBool(t *testing.T) {
 	trans := NewTMemoryBuffer()
 	p := NewTSimpleJSONProtocol(trans)
 	for _, value := range BOOL_VALUES {
-		if e := p.WriteBool(value); e != nil {
+		if e := p.WriteBool(context.Background(), value); e != nil {
 			t.Fatalf("Unable to write %s value %v due to error: %s", thetype, value, e.Error())
 		}
 		if e := p.Flush(context.Background()); e != nil {
@@ -66,7 +66,7 @@ func TestReadSimpleJSONProtocolBool(t *testing.T) {
 		}
 		trans.Flush(context.Background())
 		s := trans.String()
-		v, e := p.ReadBool()
+		v, e := p.ReadBool(context.Background())
 		if e != nil {
 			t.Fatalf("Unable to read %s value %v due to error: %s", thetype, value, e.Error())
 		}
@@ -86,7 +86,7 @@ func TestWriteSimpleJSONProtocolByte(t *testing.T) {
 	trans := NewTMemoryBuffer()
 	p := NewTSimpleJSONProtocol(trans)
 	for _, value := range BYTE_VALUES {
-		if e := p.WriteByte(value); e != nil {
+		if e := p.WriteByte(context.Background(), value); e != nil {
 			t.Fatalf("Unable to write %s value %v due to error: %s", thetype, value, e.Error())
 		}
 		if e := p.Flush(context.Background()); e != nil {
@@ -113,7 +113,7 @@ func TestReadSimpleJSONProtocolByte(t *testing.T) {
 		trans.WriteString(strconv.Itoa(int(value)))
 		trans.Flush(context.Background())
 		s := trans.String()
-		v, e := p.ReadByte()
+		v, e := p.ReadByte(context.Background())
 		if e != nil {
 			t.Fatalf("Unable to read %s value %v due to error: %s", thetype, value, e.Error())
 		}
@@ -133,7 +133,7 @@ func TestWriteSimpleJSONProtocolI16(t *testing.T) {
 	trans := NewTMemoryBuffer()
 	p := NewTSimpleJSONProtocol(trans)
 	for _, value := range INT16_VALUES {
-		if e := p.WriteI16(value); e != nil {
+		if e := p.WriteI16(context.Background(), value); e != nil {
 			t.Fatalf("Unable to write %s value %v due to error: %s", thetype, value, e.Error())
 		}
 		if e := p.Flush(context.Background()); e != nil {
@@ -160,7 +160,7 @@ func TestReadSimpleJSONProtocolI16(t *testing.T) {
 		trans.WriteString(strconv.Itoa(int(value)))
 		trans.Flush(context.Background())
 		s := trans.String()
-		v, e := p.ReadI16()
+		v, e := p.ReadI16(context.Background())
 		if e != nil {
 			t.Fatalf("Unable to read %s value %v due to error: %s", thetype, value, e.Error())
 		}
@@ -180,7 +180,7 @@ func TestWriteSimpleJSONProtocolI32(t *testing.T) {
 	trans := NewTMemoryBuffer()
 	p := NewTSimpleJSONProtocol(trans)
 	for _, value := range INT32_VALUES {
-		if e := p.WriteI32(value); e != nil {
+		if e := p.WriteI32(context.Background(), value); e != nil {
 			t.Fatalf("Unable to write %s value %v due to error: %s", thetype, value, e.Error())
 		}
 		if e := p.Flush(context.Background()); e != nil {
@@ -207,7 +207,7 @@ func TestReadSimpleJSONProtocolI32(t *testing.T) {
 		trans.WriteString(strconv.Itoa(int(value)))
 		trans.Flush(context.Background())
 		s := trans.String()
-		v, e := p.ReadI32()
+		v, e := p.ReadI32(context.Background())
 		if e != nil {
 			t.Fatalf("Unable to read %s value %v due to error: %s", thetype, value, e.Error())
 		}
@@ -231,7 +231,7 @@ func TestReadSimpleJSONProtocolI32Null(t *testing.T) {
 	trans.WriteString(value)
 	trans.Flush(context.Background())
 	s := trans.String()
-	v, e := p.ReadI32()
+	v, e := p.ReadI32(context.Background())
 
 	if e != nil {
 		t.Fatalf("Unable to read %s value %v due to error: %s", thetype, value, e.Error())
@@ -248,7 +248,7 @@ func TestWriteSimpleJSONProtocolI64(t *testing.T) {
 	trans := NewTMemoryBuffer()
 	p := NewTSimpleJSONProtocol(trans)
 	for _, value := range INT64_VALUES {
-		if e := p.WriteI64(value); e != nil {
+		if e := p.WriteI64(context.Background(), value); e != nil {
 			t.Fatalf("Unable to write %s value %v due to error: %s", thetype, value, e.Error())
 		}
 		if e := p.Flush(context.Background()); e != nil {
@@ -275,7 +275,7 @@ func TestReadSimpleJSONProtocolI64(t *testing.T) {
 		trans.WriteString(strconv.FormatInt(value, 10))
 		trans.Flush(context.Background())
 		s := trans.String()
-		v, e := p.ReadI64()
+		v, e := p.ReadI64(context.Background())
 		if e != nil {
 			t.Fatalf("Unable to read %s value %v due to error: %s", thetype, value, e.Error())
 		}
@@ -299,7 +299,7 @@ func TestReadSimpleJSONProtocolI64Null(t *testing.T) {
 	trans.WriteString(value)
 	trans.Flush(context.Background())
 	s := trans.String()
-	v, e := p.ReadI64()
+	v, e := p.ReadI64(context.Background())
 
 	if e != nil {
 		t.Fatalf("Unable to read %s value %v due to error: %s", thetype, value, e.Error())
@@ -316,7 +316,7 @@ func TestWriteSimpleJSONProtocolDouble(t *testing.T) {
 	trans := NewTMemoryBuffer()
 	p := NewTSimpleJSONProtocol(trans)
 	for _, value := range DOUBLE_VALUES {
-		if e := p.WriteDouble(value); e != nil {
+		if e := p.WriteDouble(context.Background(), value); e != nil {
 			t.Fatalf("Unable to write %s value %v due to error: %s", thetype, value, e.Error())
 		}
 		if e := p.Flush(context.Background()); e != nil {
@@ -358,7 +358,7 @@ func TestReadSimpleJSONProtocolDouble(t *testing.T) {
 		trans.WriteString(n.String())
 		trans.Flush(context.Background())
 		s := trans.String()
-		v, e := p.ReadDouble()
+		v, e := p.ReadDouble(context.Background())
 		if e != nil {
 			t.Fatalf("Unable to read %s value %v due to error: %s", thetype, value, e.Error())
 		}
@@ -392,7 +392,7 @@ func TestWriteSimpleJSONProtocolString(t *testing.T) {
 	trans := NewTMemoryBuffer()
 	p := NewTSimpleJSONProtocol(trans)
 	for _, value := range STRING_VALUES {
-		if e := p.WriteString(value); e != nil {
+		if e := p.WriteString(context.Background(), value); e != nil {
 			t.Fatalf("Unable to write %s value %v due to error: %s", thetype, value, e.Error())
 		}
 		if e := p.Flush(context.Background()); e != nil {
@@ -419,7 +419,7 @@ func TestReadSimpleJSONProtocolString(t *testing.T) {
 		trans.WriteString(jsonQuote(value))
 		trans.Flush(context.Background())
 		s := trans.String()
-		v, e := p.ReadString()
+		v, e := p.ReadString(context.Background())
 		if e != nil {
 			t.Fatalf("Unable to read %s value %v due to error: %s", thetype, value, e.Error())
 		}
@@ -443,7 +443,7 @@ func TestReadSimpleJSONProtocolStringNull(t *testing.T) {
 	trans.WriteString(value)
 	trans.Flush(context.Background())
 	s := trans.String()
-	v, e := p.ReadString()
+	v, e := p.ReadString(context.Background())
 	if e != nil {
 		t.Fatalf("Unable to read %s value %v due to error: %s", thetype, value, e.Error())
 	}
@@ -462,7 +462,7 @@ func TestWriteSimpleJSONProtocolBinary(t *testing.T) {
 	b64String := string(b64value)
 	trans := NewTMemoryBuffer()
 	p := NewTSimpleJSONProtocol(trans)
-	if e := p.WriteBinary(value); e != nil {
+	if e := p.WriteBinary(context.Background(), value); e != nil {
 		t.Fatalf("Unable to write %s value %v due to error: %s", thetype, value, e.Error())
 	}
 	if e := p.Flush(context.Background()); e != nil {
@@ -490,14 +490,14 @@ func TestReadSimpleJSONProtocolBinary(t *testing.T) {
 	trans.WriteString(jsonQuote(b64String))
 	trans.Flush(context.Background())
 	s := trans.String()
-	v, e := p.ReadBinary()
+	v, e := p.ReadBinary(context.Background())
 	if e != nil {
 		t.Fatalf("Unable to read %s value %v due to error: %s", thetype, value, e.Error())
 	}
 	if len(v) != len(value) {
 		t.Fatalf("Bad value for %s value length %v, wrote: %v, received length: %v", thetype, len(value), s, len(v))
 	}
-	for i := 0; i < len(v); i++ {
+	for i := range v {
 		if v[i] != value[i] {
 			t.Fatalf("Bad value for %s at index %d value %v, wrote: %v, received: %v", thetype, i, value[i], s, v[i])
 		}
@@ -519,7 +519,7 @@ func TestReadSimpleJSONProtocolBinaryNull(t *testing.T) {
 	trans.WriteString(value)
 	trans.Flush(context.Background())
 	s := trans.String()
-	b, e := p.ReadBinary()
+	b, e := p.ReadBinary(context.Background())
 	v := string(b)
 
 	if e != nil {
@@ -536,18 +536,18 @@ func TestWriteSimpleJSONProtocolList(t *testing.T) {
 	thetype := "list"
 	trans := NewTMemoryBuffer()
 	p := NewTSimpleJSONProtocol(trans)
-	p.WriteListBegin(TType(DOUBLE), len(DOUBLE_VALUES))
+	p.WriteListBegin(context.Background(), TType(DOUBLE), len(DOUBLE_VALUES))
 	for _, value := range DOUBLE_VALUES {
-		if e := p.WriteDouble(value); e != nil {
+		if e := p.WriteDouble(context.Background(), value); e != nil {
 			t.Fatalf("Unable to write %s value %v due to error: %s", thetype, value, e.Error())
 		}
 	}
-	p.WriteListEnd()
+	p.WriteListEnd(context.Background())
 	if e := p.Flush(context.Background()); e != nil {
 		t.Fatalf("Unable to write %s due to error flushing: %s", thetype, e.Error())
 	}
 	str := trans.String()
-	str1 := new([]interface{})
+	str1 := new([]any)
 	err := json.Unmarshal([]byte(str), str1)
 	if err != nil {
 		t.Fatalf("Unable to decode %s, wrote: %s", thetype, str)
@@ -590,18 +590,18 @@ func TestWriteSimpleJSONProtocolSet(t *testing.T) {
 	thetype := "set"
 	trans := NewTMemoryBuffer()
 	p := NewTSimpleJSONProtocol(trans)
-	p.WriteSetBegin(TType(DOUBLE), len(DOUBLE_VALUES))
+	p.WriteSetBegin(context.Background(), TType(DOUBLE), len(DOUBLE_VALUES))
 	for _, value := range DOUBLE_VALUES {
-		if e := p.WriteDouble(value); e != nil {
+		if e := p.WriteDouble(context.Background(), value); e != nil {
 			t.Fatalf("Unable to write %s value %v due to error: %s", thetype, value, e.Error())
 		}
 	}
-	p.WriteSetEnd()
+	p.WriteSetEnd(context.Background())
 	if e := p.Flush(context.Background()); e != nil {
 		t.Fatalf("Unable to write %s due to error flushing: %s", thetype, e.Error())
 	}
 	str := trans.String()
-	str1 := new([]interface{})
+	str1 := new([]any)
 	err := json.Unmarshal([]byte(str), str1)
 	if err != nil {
 		t.Fatalf("Unable to decode %s, wrote: %s", thetype, str)
@@ -644,16 +644,16 @@ func TestWriteSimpleJSONProtocolMap(t *testing.T) {
 	thetype := "map"
 	trans := NewTMemoryBuffer()
 	p := NewTSimpleJSONProtocol(trans)
-	p.WriteMapBegin(TType(I32), TType(DOUBLE), len(DOUBLE_VALUES))
+	p.WriteMapBegin(context.Background(), TType(I32), TType(DOUBLE), len(DOUBLE_VALUES))
 	for k, value := range DOUBLE_VALUES {
-		if e := p.WriteI32(int32(k)); e != nil {
+		if e := p.WriteI32(context.Background(), int32(k)); e != nil {
 			t.Fatalf("Unable to write %s key int32 value %v due to error: %s", thetype, k, e.Error())
 		}
-		if e := p.WriteDouble(value); e != nil {
+		if e := p.WriteDouble(context.Background(), value); e != nil {
 			t.Fatalf("Unable to write %s value float64 value %v due to error: %s", thetype, value, e.Error())
 		}
 	}
-	p.WriteMapEnd()
+	p.WriteMapEnd(context.Background())
 	if e := p.Flush(context.Background()); e != nil {
 		t.Fatalf("Unable to write %s due to error flushing: %s", thetype, e.Error())
 	}
@@ -682,7 +682,7 @@ func TestWriteSimpleJSONProtocolMap(t *testing.T) {
 		strv := l[k*2+4]
 		ik, err := strconv.Atoi(strk)
 		if err != nil {
-			t.Fatalf("Bad value for %s index %v, wrote: %v, expected: %v, error: %s", thetype, k, strk, strconv.Itoa(k), err.Error())
+			t.Fatalf("Bad value for %s index %v, wrote: %v, expected: %v, error: %s", thetype, k, strk, k, err.Error())
 		}
 		if ik != k {
 			t.Fatalf("Bad value for %s index %v, wrote: %v, expected: %v", thetype, k, strk, k)
@@ -720,19 +720,155 @@ func TestWriteSimpleJSONProtocolSafePeek(t *testing.T) {
 	p := NewTSimpleJSONProtocol(trans)
 	trans.Write([]byte{'a', 'b'})
 	trans.Flush(context.Background())
-	
+
 	test1 := p.safePeekContains([]byte{'a', 'b'})
 	if !test1 {
 		t.Fatalf("Should match at test 1")
 	}
-	
+
 	test2 := p.safePeekContains([]byte{'a', 'b', 'c', 'd'})
 	if test2 {
 		t.Fatalf("Should not match at test 2")
 	}
-	
+
 	test3 := p.safePeekContains([]byte{'x', 'y'})
 	if test3 {
 		t.Fatalf("Should not match at test 3")
+	}
+}
+
+func TestJSONContextStack(t *testing.T) {
+	var stack jsonContextStack
+	t.Run("empty-peek", func(t *testing.T) {
+		v, ok := stack.peek()
+		if ok {
+			t.Error("peek() on empty should return ok: false")
+		}
+		expected := _CONTEXT_INVALID
+		if v != expected {
+			t.Errorf("Expected value from peek() to be %v(%d), got %v(%d)", expected, expected, v, v)
+		}
+	})
+	t.Run("empty-pop", func(t *testing.T) {
+		v, ok := stack.pop()
+		if ok {
+			t.Error("pop() on empty should return ok: false")
+		}
+		expected := _CONTEXT_INVALID
+		if v != expected {
+			t.Errorf("Expected value from pop() to be %v(%d), got %v(%d)", expected, expected, v, v)
+		}
+	})
+	t.Run("push-peek-pop", func(t *testing.T) {
+		expected := _CONTEXT_INVALID
+		stack.push(expected)
+		if len(stack) != 1 {
+			t.Errorf("Expected stack to be as size 1 after push, got %#v", stack)
+		}
+		v, ok := stack.peek()
+		if !ok {
+			t.Error("peek() on non-empty should return ok: true")
+		}
+		if v != expected {
+			t.Errorf("Expected value from peek() to be %v(%d), got %v(%d)", expected, expected, v, v)
+		}
+		if len(stack) != 1 {
+			t.Errorf("Expected peek() to be read-only, got %#v", stack)
+		}
+		v, ok = stack.pop()
+		if !ok {
+			t.Error("pop() on non-empty should return ok: true")
+		}
+		if v != expected {
+			t.Errorf("Expected value from pop() to be %v(%d), got %v(%d)", expected, expected, v, v)
+		}
+		if len(stack) != 0 {
+			t.Errorf("Expected pop() to empty the stack, got %#v", stack)
+		}
+	})
+}
+
+func TestTSimpleJSONProtocolUnmatchedBeginEnd(t *testing.T) {
+	UnmatchedBeginEndProtocolTest(t, NewTSimpleJSONProtocolFactory())
+}
+
+func TestReadSimpleJSONProtocolMapBeginSizeLimit(t *testing.T) {
+	ctx := context.Background()
+	trans := NewTMemoryBuffer()
+	wp := NewTSimpleJSONProtocol(trans)
+	if err := wp.WriteMapBegin(ctx, STRING, STRING, 1<<30); err != nil {
+		t.Fatal(err)
+	}
+	if err := wp.Flush(ctx); err != nil {
+		t.Fatal(err)
+	}
+
+	rp := NewTSimpleJSONProtocolConf(trans, &TConfiguration{MaxMessageSize: 1024})
+	_, _, size, err := rp.ReadMapBegin(ctx)
+	if err == nil {
+		t.Fatalf("expected size-limit error reading oversized map, got nil with size %d", size)
+	}
+	if terr, ok := err.(TProtocolException); !ok || terr.TypeId() != SIZE_LIMIT {
+		t.Errorf("expected SIZE_LIMIT protocol exception, got %v", err)
+	}
+}
+
+func TestReadSimpleJSONProtocolMapBeginSizeOverflow(t *testing.T) {
+	// iSize = 1<<32 + 1; int32 narrowing wraps it to 1, which would pass checkSizeForProtocol.
+	// The map header is written directly as raw JSON to avoid int-width issues on 32-bit platforms.
+	overflowSize := int64(math.MaxInt32)*2 + 3 // = 4294967297 = 1<<32 + 1
+	buf := NewTMemoryBuffer()
+	buf.WriteString(fmt.Sprintf("[%d,%d,%d]", I32, I32, overflowSize))
+	proto := NewTSimpleJSONProtocolConf(buf, &TConfiguration{MaxMessageSize: 1024})
+	_, _, _, err := proto.ReadMapBegin(context.Background())
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+	tpe, ok := err.(TProtocolException)
+	if !ok {
+		t.Fatalf("expected TProtocolException, got %T: %v", err, err)
+	}
+	if tpe.TypeId() != SIZE_LIMIT {
+		t.Errorf("expected SIZE_LIMIT, got %d: %v", tpe.TypeId(), err)
+	}
+}
+
+func TestReadSimpleJSONProtocolListBeginSizeOverflow(t *testing.T) {
+	// nSize = 1<<32 + 1; int32 narrowing wraps it to 1, which would pass checkSizeForProtocol.
+	// The list header is written directly as raw JSON to avoid int-width issues on 32-bit platforms.
+	overflowSize := int64(math.MaxInt32)*2 + 3 // = 4294967297 = 1<<32 + 1
+	for _, name := range []string{"list", "set"} {
+		t.Run(name, func(t *testing.T) {
+			buf := NewTMemoryBuffer()
+			buf.WriteString(fmt.Sprintf("[%d,%d]", I32, overflowSize))
+			proto := NewTSimpleJSONProtocolConf(buf, &TConfiguration{MaxMessageSize: 1024})
+			var err error
+			if name == "list" {
+				_, _, err = proto.ReadListBegin(context.Background())
+			} else {
+				_, _, err = proto.ReadSetBegin(context.Background())
+			}
+			if err == nil {
+				t.Fatal("expected error, got nil")
+			}
+			tpe, ok := err.(TProtocolException)
+			if !ok {
+				t.Fatalf("expected TProtocolException, got %T: %v", err, err)
+			}
+			if tpe.TypeId() != SIZE_LIMIT {
+				t.Errorf("expected SIZE_LIMIT, got %d: %v", tpe.TypeId(), err)
+			}
+		})
+	}
+}
+
+func TestReadSimpleJSONProtocolBoolEmptyInputErrors(t *testing.T) {
+	trans := NewTMemoryBuffer()
+	p := NewTSimpleJSONProtocol(trans)
+	// No data written: an empty/EOF bool must be a protocol error, not a silent
+	// false, matching ReadString and ReadBinary on the same empty peek.
+	_, e := p.ReadBool(context.Background())
+	if e == nil {
+		t.Fatalf("ReadBool on empty input should return an error, got (false, nil)")
 	}
 }

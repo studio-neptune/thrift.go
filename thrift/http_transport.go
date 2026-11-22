@@ -34,20 +34,32 @@ func NewThriftHandlerFunc(processor TProcessor,
 		w.Header().Add("Content-Type", "application/x-thrift")
 
 		transport := NewStreamTransport(r.Body, w)
+		// A request that declares its length tells the decoder how much it can
+		// possibly read; without this the transport reports unknown and the
+		// container element-count check has nothing to bound against.
+		transport.setKnownSize(r.ContentLength)
 		processor.Process(r.Context(), inPfactory.GetProtocol(transport), outPfactory.GetProtocol(transport))
 	})
 }
 
 // gz transparently compresses the HTTP response if the client supports it.
 func gz(handler http.HandlerFunc) http.HandlerFunc {
+	sp := newPool(func() *gzip.Writer {
+		return gzip.NewWriter(nil)
+	}, nil)
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
 			handler(w, r)
 			return
 		}
 		w.Header().Set("Content-Encoding", "gzip")
-		gz := gzip.NewWriter(w)
-		defer gz.Close()
+		gz := sp.get()
+		gz.Reset(w)
+		defer func() {
+			gz.Close()
+			sp.put(&gz)
+		}()
 		gzw := gzipResponseWriter{Writer: gz, ResponseWriter: w}
 		handler(gzw, r)
 	}

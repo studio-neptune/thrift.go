@@ -22,7 +22,6 @@ package thrift
 import (
 	"log"
 	"os"
-	"testing"
 )
 
 // Logger is a simple wrapper of a logging function.
@@ -35,14 +34,23 @@ import (
 //
 // See https://issues.apache.org/jira/browse/THRIFT-4985 for the design
 // discussion behind it.
+//
+// Deprecated: This is no longer used by any thrift go library code,
+// will be removed in the future version.
 type Logger func(msg string)
 
 // NopLogger is a Logger implementation that does nothing.
+//
+// Deprecated: This is no longer used by any thrift go library code,
+// will be removed in the future version.
 func NopLogger(msg string) {}
 
 // StdLogger wraps stdlib log package into a Logger.
 //
 // If logger passed in is nil, it will fallback to use stderr and default flags.
+//
+// Deprecated: This is no longer used by any thrift go library code,
+// will be removed in the future version.
 func StdLogger(logger *log.Logger) Logger {
 	if logger == nil {
 		logger = log.New(os.Stderr, "", log.LstdFlags)
@@ -55,7 +63,16 @@ func StdLogger(logger *log.Logger) Logger {
 // TestLogger is a Logger implementation can be used in test codes.
 //
 // It fails the test when being called.
-func TestLogger(tb testing.TB) Logger {
+//
+// The argument is declared as the one method the implementation calls rather
+// than as testing.TB, so that the library itself does not import testing.
+// A *testing.T, a *testing.B, or a testing.TB still satisfies it.
+//
+// Deprecated: This is no longer used by any thrift go library code,
+// will be removed in the future version.
+func TestLogger(tb interface {
+	Errorf(format string, args ...any)
+}) Logger {
 	return func(msg string) {
 		tb.Errorf("logger called with msg: %q", msg)
 	}
